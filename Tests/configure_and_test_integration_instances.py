@@ -1399,6 +1399,7 @@ def configure_and_test_integrations_pre_update(build: Build, new_integrations, m
                                                                                  tests_for_iteration,
                                                                                  new_integrations,
                                                                                  modified_integrations)
+
     successful_tests_pre, failed_tests_pre = instance_testing(build, modified_module_instances, pre_update=True)
     return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
