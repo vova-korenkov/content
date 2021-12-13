@@ -319,7 +319,7 @@ def configure_integration_instance(integration, client, placeholders_map):
     integration_params = change_placeholders_to_values(placeholders_map, integration.get('params'))
     is_byoi = integration.get('byoi', True)
     validate_test = integration.get('validate_test', True)
-    incident_configuration = integration.get('incident_configuration', {})
+    incident_configuration = integration.get('params',{}).get('incident_configuration', {})
     print(f'#### {incident_configuration=}')
     integration_configuration = __get_integration_config(client, integration_name)
     if not integration_configuration:
