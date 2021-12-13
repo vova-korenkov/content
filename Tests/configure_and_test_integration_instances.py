@@ -641,12 +641,14 @@ def set_integration_instance_parameters(integration_configuration,
 
     # TODO add incident_configuration to integration
     # Add incident type to module configurations, as this configuration already exist.
+    print(f'########### current configuration: {module_configuration=}')
+
     if incident_configuration.get('incident_type'):
-        print(f'########### got configuration: {incident_configuration=}')
         incident_type_configuration = list(
             filter(lambda config: config.get('name') == 'incidentType', module_configuration))
 
         incident_type_configuration[0]['value'] = incident_configuration.get('incident_type')
+        print(f'########### created configuration: {module_configuration=}')
 
     # define module instance
     module_instance = {
@@ -660,10 +662,12 @@ def set_integration_instance_parameters(integration_configuration,
         'isIntegrationScript': is_byoi,
         'name': instance_name,
         'passwordProtected': False,
-        # 'mappingId': incident_configuration.get('classifier_id') if incident_configuration.get('classifier_id') else '',
-        # 'incomingMapperId': incident_configuration.get('incoming_mapper_id') if incident_configuration.get('incoming_mapper_id') else '',
         'version': 0
     }
+    if incident_configuration.get('classifier_id'):
+        module_instance['mappingId'] = incident_configuration.get('classifier_id')
+    if incident_configuration.get('incoming_mapper_id'):
+        module_instance['incomingMapperId'] = incident_configuration.get('incoming_mapper_id')
 
     # set server keys
     __set_server_keys(client, integration_params, integration_configuration['name'])
