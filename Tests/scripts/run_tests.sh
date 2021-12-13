@@ -20,4 +20,5 @@ if [ $RETVAL -eq 0 ]; then
   touch "$filepath"
 fi
 
+sleep 1000
 exit $RETVAL
