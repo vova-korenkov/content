@@ -542,6 +542,8 @@ def set_module_params(param_conf, integration_params):
     Returns:
         (dict): The configured parameter object
     """
+    print(f"########################## {param_conf=}, params={integration_params.keys()} ###############")
+
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
@@ -635,15 +637,12 @@ def set_integration_instance_parameters(integration_configuration,
 
     # TODO add incident_configuration to integration
     incident_configuration = integration_params.pop('incident_configuration', {})
-    print(f'#######{incident_configuration=}######')
     if incident_configuration.get('incident_type'):
         incident_type_configuration = list(
             filter(lambda config: config.get('name') == 'incidentType', module_configuration))
-        print(f'#######{incident_type_configuration=}######')
 
         incident_type_configuration[0]['value'] = incident_configuration.get('incident_type')
 
-    print(f"########################## {integration_configuration=}, params={integration_params.keys()} ###############")
     # define module instance
     module_instance = {
         'brand': integration_configuration['name'],
