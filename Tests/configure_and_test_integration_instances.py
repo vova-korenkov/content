@@ -641,15 +641,13 @@ def set_integration_instance_parameters(integration_configuration,
 
     # TODO add incident_configuration to integration
     # Add incident type to module configurations, as this configuration already exist.
-    print(f'########### current configuration: {module_configuration=}')
 
     if incident_configuration.get('incident_type'):
         incident_type_configuration = list(
             filter(lambda config: config.get('name') == 'incidentType', module_configuration))
+        print(f'########### current configuration after filter: {incident_type_configuration=}')
 
         incident_type_configuration[0]['value'] = incident_configuration.get('incident_type')
-        print(f'########### created configuration: {module_configuration=}')
-        print(f'########### entered configuration: {integration_configuration=}')
 
 
     # define module instance
