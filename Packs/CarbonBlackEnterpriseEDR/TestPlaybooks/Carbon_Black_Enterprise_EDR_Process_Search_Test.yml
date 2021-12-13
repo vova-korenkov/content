@@ -104,6 +104,42 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "3":
+    id: "3"
+    taskid: 108517b7-a917-4d5c-825a-a331e04a5045
+    type: condition
+    task:
+      id: 108517b7-a917-4d5c-825a-a331e04a5045
+      version: -1
+      name: Untitled Task
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      left:
+        simple: '''a'''
+      right:
+        simple: '''b'''
+    results:
+      - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
