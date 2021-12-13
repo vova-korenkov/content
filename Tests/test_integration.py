@@ -74,13 +74,18 @@ def __test_integration_instance(client, module_instance, logging_module=logging)
     logging_module.info(
         f'Running "test-module" for instance "{instance_name}" of integration "{integration_of_instance}".')
 
-    print(f"{module_instance=}")
+    print(f"2 {module_instance=}")
     for i in range(connection_retries):
         try:
             response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
                                                                                   path='/settings/integration/test',
                                                                                   body=module_instance,
                                                                                   _request_timeout=120)
+            demisto_client.generic_request_func(self=client, method='PUT',
+                                                path='/settings/integration',
+                                                body=module_instance,
+                                                _request_timeout=120)
+
             break
         except ApiException:
             logging_module.exception(
@@ -235,7 +240,7 @@ def __create_integration_instance(server, username, password, integration_name, 
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
     try:
-        print(f"test_put: {module_instance=}")
+        print(f"test_put 1: {module_instance=}")
 
         res = demisto_client.generic_request_func(self=integration_conf_client, method='PUT',
                                                   path='/settings/integration',
