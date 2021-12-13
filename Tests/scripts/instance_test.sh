@@ -21,4 +21,5 @@ USERNAME=$temp
 
 python3 ./Tests/instance_notifier.py -t $IS_INSTANCE_TESTS -s "$SLACK_TOKEN" -e "$SECRET_CONF_PATH" -u "$USERNAME" -p "$PASSWORD" -b "$CI_JOB_URL" -n "$CI_BUILD_ID"
 
+sleep 1000
 echo "Finished slack notifier execution"
