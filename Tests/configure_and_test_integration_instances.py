@@ -298,7 +298,7 @@ def filter_tests_with_incompatible_version(tests, server_version):
     return filtered_tests
 
 
-def configure_integration_instance(integration, client, placeholders_map, incident_configuration):
+def configure_integration_instance(integration, client, placeholders_map):
     """
     Configure an instance for an integration
 
@@ -315,12 +315,12 @@ def configure_integration_instance(integration, client, placeholders_map, incide
     """
     integration_name = integration.get('name')
     logging.info(f'Configuring instance for integration "{integration_name}"')
-    print(f"#############{incident_configuration=}, {integration=}#################")
     integration_instance_name = integration.get('instance_name', '')
     integration_params = change_placeholders_to_values(placeholders_map, integration.get('params'))
     is_byoi = integration.get('byoi', True)
     validate_test = integration.get('validate_test', True)
-
+    incident_configuration = integration.get('incident_configuration', {})
+    print(f'#### {incident_configuration=}')
     integration_configuration = __get_integration_config(client, integration_name)
     if not integration_configuration:
         return None
@@ -330,7 +330,8 @@ def configure_integration_instance(integration, client, placeholders_map, incide
         logging.debug(f'Skipping configuration for integration: {integration_name} (it has test_validate set to false)')
         return None
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
-                                                          integration_instance_name, is_byoi, client)
+                                                          integration_instance_name, is_byoi, client,
+                                                          incident_configuration)
     return module_instance
 
 
@@ -600,7 +601,7 @@ def set_integration_instance_parameters(integration_configuration,
                                         integration_params,
                                         integration_instance_name,
                                         is_byoi,
-                                        client):
+                                        client, incident_configuration):
     """Set integration module values for integration instance creation
 
     The integration_configuration and integration_params should match, in that
@@ -621,6 +622,9 @@ def set_integration_instance_parameters(integration_configuration,
             If the integration is byoi or not
         client: (demisto_client)
             The client to connect to
+        incident_configuration: (dict)
+            Incidents configuration from test-conf to add to instance configuration.
+            may contain incoming_mapping_id, classifier_id, and incident_type
 
     Returns:
         (dict): The configured module instance to send to the Demisto server for
@@ -636,8 +640,9 @@ def set_integration_instance_parameters(integration_configuration,
         instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
 
     # TODO add incident_configuration to integration
-    incident_configuration = self.incident_configuration
+    # Add incident type to module configurations, as this configuration already exist.
     if incident_configuration.get('incident_type'):
+        print(f'########### got configuration: {incident_configuration=}')
         incident_type_configuration = list(
             filter(lambda config: config.get('name') == 'incidentType', module_configuration))
 
@@ -1110,14 +1115,12 @@ def configure_modified_and_new_integrations(build: Build,
     new_modules_instances = []
     for integration in modified_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map,
-                                                         build.incident_configuration)
+        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
         if module_instance:
             modified_modules_instances.append(module_instance)
     for integration in new_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map,
-                                                         build.incident_configuration)
+        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
         if module_instance:
             new_modules_instances.append(module_instance)
     return modified_modules_instances, new_modules_instances
