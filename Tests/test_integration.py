@@ -81,10 +81,6 @@ def __test_integration_instance(client, module_instance, logging_module=logging)
                                                                                   path='/settings/integration/test',
                                                                                   body=module_instance,
                                                                                   _request_timeout=120)
-            demisto_client.generic_request_func(self=client, method='PUT',
-                                                path='/settings/integration',
-                                                body=module_instance,
-                                                _request_timeout=120)
 
             break
         except ApiException:
@@ -178,7 +174,11 @@ def __delete_integration_instance_if_determined_by_name(client, instance_name, l
 
 # return instance name if succeed, None otherwise
 def __create_integration_instance(server, username, password, integration_name, integration_instance_name,
-                                  integration_params, is_byoi, logging_manager=logging, validate_test=True):
+                                  integration_params, is_byoi, logging_manager=logging, validate_test=True,
+                                  incident_configuration=None):
+
+    print(f"Got here. {incident_configuration=}")
+
     # get configuration config (used for later rest api
     integration_conf_client = demisto_client.configure(base_url=server, username=username, password=password,
                                                        verify_ssl=False)
@@ -199,6 +199,14 @@ def __create_integration_instance(server, username, password, integration_name, 
     logging_manager.info(
         f'Configuring instance for {integration_name} (instance name: {instance_name}, validate "Test": {validate_test})'
     )
+    # Add incident type to module configurations, as this configuration already exist.
+
+    if incident_configuration and incident_configuration.get('incident_type'):
+        incident_type_configuration = list(
+            filter(lambda config: config.get('name') == 'incidentType', module_configuration))
+
+        incident_type_configuration[0]['value'] = incident_configuration.get('incident_type')
+
     # define module instance
     module_instance = {
         'brand': configuration['name'],
@@ -213,6 +221,11 @@ def __create_integration_instance(server, username, password, integration_name, 
         'passwordProtected': False,
         'version': 0
     }
+    if incident_configuration.get('classifier_id'):
+        module_instance['mappingId'] = incident_configuration.get('classifier_id')
+    if incident_configuration.get('incoming_mapper_id'):
+        module_instance['incomingMapperId'] = incident_configuration.get('incoming_mapper_id')
+
 
     # set server keys
     __set_server_keys(integration_conf_client, logging_manager, integration_params, configuration['name'])

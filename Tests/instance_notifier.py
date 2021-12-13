@@ -62,11 +62,14 @@ def test_instances(secret_conf_path, server, username, password):
         is_byoi = integration.get('byoi', True)
         has_integration = integration.get('has_integration', True)
         validate_test = integration.get('validate_test', True)
+        incident_configuration = integration.get('params', {}).get('incident_configuration', {})
+
         if has_integration:
             try:
                 instance_id, failure_message = __create_integration_instance(
                     server, username, password, integration_name, integration_instance_name,
-                    integration_params, is_byoi, validate_test=validate_test)
+                    integration_params, is_byoi, validate_test=validate_test,
+                    incident_configuration=incident_configuration)
             except Exception:
                 logging.exception(f'Failed to configure integration with name {integration_name}')
                 failed_integrations.append(

@@ -319,8 +319,6 @@ def configure_integration_instance(integration, client, placeholders_map):
     integration_params = change_placeholders_to_values(placeholders_map, integration.get('params'))
     is_byoi = integration.get('byoi', True)
     validate_test = integration.get('validate_test', True)
-    incident_configuration = integration.get('params',{}).get('incident_configuration', {})
-    print(f'#### {incident_configuration=}')
     integration_configuration = __get_integration_config(client, integration_name)
     if not integration_configuration:
         return None
@@ -330,8 +328,7 @@ def configure_integration_instance(integration, client, placeholders_map):
         logging.debug(f'Skipping configuration for integration: {integration_name} (it has test_validate set to false)')
         return None
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
-                                                          integration_instance_name, is_byoi, client,
-                                                          incident_configuration)
+                                                          integration_instance_name, is_byoi, client)
     return module_instance
 
 
@@ -601,7 +598,7 @@ def set_integration_instance_parameters(integration_configuration,
                                         integration_params,
                                         integration_instance_name,
                                         is_byoi,
-                                        client, incident_configuration):
+                                        client):
     """Set integration module values for integration instance creation
 
     The integration_configuration and integration_params should match, in that
@@ -622,10 +619,6 @@ def set_integration_instance_parameters(integration_configuration,
             If the integration is byoi or not
         client: (demisto_client)
             The client to connect to
-        incident_configuration: (dict)
-            Incidents configuration from test-conf to add to instance configuration.
-            may contain incoming_mapping_id, classifier_id, and incident_type
-
     Returns:
         (dict): The configured module instance to send to the Demisto server for
         instantiation.
@@ -638,17 +631,6 @@ def set_integration_instance_parameters(integration_configuration,
         instance_name = integration_params['integrationInstanceName']
     else:
         instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
-
-    # TODO add incident_configuration to integration
-    # Add incident type to module configurations, as this configuration already exist.
-
-    if incident_configuration.get('incident_type'):
-        incident_type_configuration = list(
-            filter(lambda config: config.get('name') == 'incidentType', module_configuration))
-        print(f'########### current configuration after filter: {incident_type_configuration=}')
-
-        incident_type_configuration[0]['value'] = incident_configuration.get('incident_type')
-
 
     # define module instance
     module_instance = {
@@ -664,10 +646,6 @@ def set_integration_instance_parameters(integration_configuration,
         'passwordProtected': False,
         'version': 0
     }
-    if incident_configuration.get('classifier_id'):
-        module_instance['mappingId'] = incident_configuration.get('classifier_id')
-    if incident_configuration.get('incoming_mapper_id'):
-        module_instance['incomingMapperId'] = incident_configuration.get('incoming_mapper_id')
 
     # set server keys
     __set_server_keys(client, integration_params, integration_configuration['name'])
