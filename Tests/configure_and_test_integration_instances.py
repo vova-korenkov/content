@@ -143,7 +143,6 @@ class Build:
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-        self.incident_configuration = self.secret_conf.get('incident_configuration')
         self.servers = [Server(internal_ip,
                                port,
                                self.username,
@@ -319,6 +318,7 @@ def configure_integration_instance(integration, client, placeholders_map):
     integration_params = change_placeholders_to_values(placeholders_map, integration.get('params'))
     is_byoi = integration.get('byoi', True)
     validate_test = integration.get('validate_test', True)
+
     integration_configuration = __get_integration_config(client, integration_name)
     if not integration_configuration:
         return None
@@ -619,6 +619,7 @@ def set_integration_instance_parameters(integration_configuration,
             If the integration is byoi or not
         client: (demisto_client)
             The client to connect to
+
     Returns:
         (dict): The configured module instance to send to the Demisto server for
         instantiation.
@@ -1377,7 +1378,6 @@ def configure_and_test_integrations_pre_update(build: Build, new_integrations, m
                                                                                  tests_for_iteration,
                                                                                  new_integrations,
                                                                                  modified_integrations)
-
     successful_tests_pre, failed_tests_pre = instance_testing(build, modified_module_instances, pre_update=True)
     return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
