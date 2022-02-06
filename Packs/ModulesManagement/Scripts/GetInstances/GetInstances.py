@@ -38,6 +38,7 @@ def filter_instances(modules: Dict, **kwargs) -> Iterator[Dict]:
 def main():
     try:
         args = prepare_args(demisto.args())
+
         context_config = list(filter_instances(demisto.getModules(), **args))
         return_results(CommandResults(
             outputs=context_config,
