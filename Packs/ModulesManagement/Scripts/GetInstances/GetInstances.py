@@ -23,6 +23,7 @@ def prepare_args(args: Dict):
         args['filter_brand'] = argToList(args.pop('brand'))
 
     if args.get('instance_status') not in ['active', 'both', 'disabled']:
+
         raise ValueError("instance_status should be one of the following 'active', 'both', 'disabled'")
 
     return args
