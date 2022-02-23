@@ -1,7 +1,7 @@
 awscli==1.22.59
 slackclient==2.9.3
 pyspellchecker==0.6.3
-ansible==2.8.6
+ansible==5.4.0
 ansible-runner==2.1.1
 rsa==4.8
 paramiko==2.9.2
