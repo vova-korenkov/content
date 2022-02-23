@@ -1,4 +1,4 @@
-awscli==1.22.59
+awscli==1.22.60
 slackclient==2.9.3
 pyspellchecker==0.6.3
 ansible==2.8.6
